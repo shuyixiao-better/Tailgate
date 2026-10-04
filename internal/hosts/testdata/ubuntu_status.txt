@@ -1,0 +1,44 @@
+__TAILGATE_HOSTNAME__
+web-01
+__TAILGATE_OS__
+PRETTY_NAME="Ubuntu 24.04.1 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
+VERSION="24.04.1 LTS (Noble Numbat)"
+ID=ubuntu
+__TAILGATE_KERNEL__
+6.8.0-45-generic
+__TAILGATE_UPTIME__
+123456.78 432109.12
+__TAILGATE_CORES__
+4
+__TAILGATE_LOAD__
+0.42 0.61 0.77 1/234 9929
+__TAILGATE_CPU__
+cpu  1000 20 500 8000 100 10 50 20 30 2
+__TAILGATE_MEMORY__
+MemTotal:        8060928 kB
+MemFree:          942080 kB
+MemAvailable:    5048576 kB
+Buffers:          120832 kB
+Cached:          4026368 kB
+SwapTotal:       2097148 kB
+SwapFree:        2000000 kB
+__TAILGATE_DISKS__
+Filesystem     Type  1024-blocks     Used Available Capacity Mounted on
+/dev/sda2      ext4    102400000 61440000  40960000      60% /
+/dev/sdb1      xfs      52428800 47185920   5242880      90% /srv/data with spaces
+tmpfs          tmpfs      806092        0    806092       0% /run/user/1000
+overlay        overlay 102400000 61440000  40960000      60% /var/lib/docker/overlay2/merged
+__TAILGATE_FAILED__
+nginx.service loaded failed failed A high performance web server and a reverse proxy server
+worker.service loaded failed failed Tailgate test worker
+__TAILGATE_TOP_CPU__
+  123 35.2  1.5 postgres
+  456  8.7  3.2 node
+  789  2.0  0.1 nginx
+__TAILGATE_TOP_MEMORY__
+  456  8.7  3.2 node
+  123 35.2  1.5 postgres
+  789  2.0  0.1 nginx
+__TAILGATE_END__

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Tailgate · 服务器网关</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/xterm.css">
+  <link rel="stylesheet" href="/app.css">
+  <script defer src="/vendor/xterm.js"></script>
+  <script defer src="/vendor/addon-fit.js"></script>
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <section id="login-screen" class="login-screen">
+    <div class="login-brand"><img src="/favicon.svg" width="44" height="44" alt=""><span>Tailgate</span></div>
+    <div class="login-card">
+      <span class="eyebrow">你的服务器，始终在掌握中</span>
+      <h1>连接工作现场</h1>
+      <p>查看主机、打开终端，追踪每一次操作。</p>
+      <form id="login-form">
+        <label>用户名<input id="login-username" name="username" autocomplete="username" required maxlength="64" autofocus></label>
+        <label>密码<input id="login-password" name="password" type="password" autocomplete="current-password" required maxlength="72"></label>
+        <div id="login-error" class="form-error" role="alert"></div>
+        <button class="button primary wide" type="submit">登录网关 <span aria-hidden="true">↗</span></button>
+      </form>
+      <div class="login-note"><span class="status-dot"></span>通过局域网访问 · 操作全程留痕</div>
+    </div>
+    <div class="login-footer">TAILGATE / SSH GATEWAY</div>
+  </section>
+
+  <div id="app-screen" class="app-shell" hidden>
+    <aside class="sidebar">
+      <a class="brand" href="/"><img src="/favicon.svg" width="34" height="34" alt=""><span>Tailgate<small>服务器网关</small></span></a>
+      <div class="nav-label">工作空间</div>
+      <nav aria-label="主导航">
+        <button data-view="overview" class="nav-item active"><span class="nav-icon">◫</span>主机总览<span id="nav-host-count" class="nav-count">0</span></button>
+        <button data-view="terminal" class="nav-item"><span class="nav-icon">›_</span>网页终端</button>
+        <button data-view="logs" class="nav-item"><span class="nav-icon">≡</span>日志查看器</button>
+        <button data-view="audit" class="nav-item"><span class="nav-icon">◷</span>操作审计</button>
+        <button data-view="settings" class="nav-item admin-only"><span class="nav-icon">⚙</span>网关设置</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="gateway-state"><span class="status-dot"></span>网关已连接<small>时间显示为北京时间</small></div>
+        <button id="theme-button" class="quiet-button">☼ 切换浅色模式</button>
+        <div class="user-row"><span id="user-avatar" class="avatar">U</span><div><strong id="user-name"></strong><small id="user-role"></small></div><button id="logout-button" class="icon-button" title="退出登录" aria-label="退出登录">↪</button></div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="page-header"><div><span class="eyebrow">TAILGATE / WORKSPACE</span><h1 id="page-title">主机总览</h1><p id="page-subtitle">一眼了解服务器的运行状态。</p></div><div class="header-right"><span id="refresh-state" class="muted"></span><button id="refresh-button" class="button secondary">↻ 刷新</button><div class="compact-account"><button id="compact-theme" class="icon-button" title="切换明暗模式" aria-label="切换明暗模式">☼</button><button id="compact-logout" class="icon-button" title="退出登录" aria-label="退出登录">↪</button></div></div></header>
+
+      <section id="view-overview" class="view">
+        <div class="summary-grid">
+          <article class="summary-card"><span>主机总数</span><strong id="summary-total">0</strong><small>已配置的远程主机</small></article>
+          <article class="summary-card"><span>当前在线</span><strong id="summary-online" class="accent">0</strong><small id="summary-online-note">等待采集</small></article>
+          <article class="summary-card"><span>需要关注</span><strong id="summary-alerts">0</strong><small>离线、磁盘或服务异常</small></article>
+          <article class="summary-card"><span>平均 CPU</span><strong id="summary-cpu">—</strong><small>在线主机的最新采样</small></article>
+        </div>
+        <div class="section-toolbar"><div><h2>全部主机 <span id="host-result-count" class="muted"></span></h2><p class="muted small">点击主机查看资源、磁盘与服务详情</p></div><div class="toolbar-fields"><input id="host-search" class="search-input" placeholder="搜索名称、地址或描述" aria-label="搜索主机"><select id="host-tag" aria-label="按标签筛选"><option value="">全部标签</option></select><button id="overview-add-host" class="button secondary admin-only">＋ 添加主机</button></div></div>
+        <div id="host-grid" class="host-grid"></div>
+        <div id="hosts-empty" class="empty-state" hidden><span class="empty-symbol">◫</span><h2>从第一台主机开始</h2><p>在网关设置中添加服务器，资源状态会自动出现在这里。</p><button class="button primary admin-only" data-go-settings="hosts">添加主机</button></div>
+      </section>
+
+      <section id="view-terminal" class="view" hidden>
+        <div class="panel terminal-panel"><div class="panel-toolbar"><div class="toolbar-fields"><select id="terminal-host" aria-label="终端主机"></select><button id="terminal-open" class="button primary">＋ 新建终端</button></div><span class="muted small">⌘ / Ctrl + Shift + C 复制 · 浏览器快捷键粘贴</span></div><div id="terminal-tabs" class="terminal-tabs" role="tablist"></div><div id="terminal-panes" class="terminal-panes"><div id="terminal-empty" class="terminal-empty"><span class="empty-symbol">›_</span><h2>直接进入服务器</h2><p>选择主机并新建终端。可同时打开多台主机，每个标签独立连接。</p></div></div><div class="panel-footer"><span>交互式 SSH · 会话开始与结束均记入审计</span><span id="terminal-count">0 个会话</span></div></div>
+      </section>
+
+      <section id="view-logs" class="view" hidden>
+        <div class="panel"><form id="logs-form" class="log-controls"><label>主机<select id="logs-host" required></select></label><label>来源<select id="logs-mode"><option value="path">日志文件</option><option value="unit">systemd 服务</option></select></label><label class="grow"><span id="logs-target-label">文件路径</span><input id="logs-target" list="log-paths" value="/var/log/syslog" placeholder="/var/log/syslog" required><datalist id="log-paths"><option value="/var/log/syslog"><option value="/var/log/nginx/error.log"><option value="/var/log/auth.log"></datalist></label><label>服务端过滤<input id="logs-grep" placeholder="关键字 / 正则（可留空）"></label><label class="inline-check"><input id="logs-ignore-case" type="checkbox">忽略大小写</label><button id="logs-connect" class="button primary" type="submit">开始跟踪</button></form><div class="panel-toolbar"><div class="live-label"><span id="logs-dot" class="status-dot neutral"></span><strong id="logs-status">尚未连接</strong><span id="logs-lines" class="muted small">0 行</span></div><div class="toolbar-fields"><input id="logs-highlight" placeholder="高亮关键字" aria-label="高亮关键字"><button id="logs-pause" class="button secondary" disabled>暂停</button><button id="logs-clear" class="button secondary">清空</button><button id="logs-stop" class="button secondary" disabled>停止</button></div></div><pre id="logs-output" class="log-output" aria-live="off"><span class="muted">选择主机与日志来源，查看实时输出。</span></pre><div class="panel-footer"><span id="logs-buffer-note">最多保留最近 2,000 行 / 1 MiB，避免长时间跟踪占用过多内存</span><span>页面关闭时自动结束远端跟踪</span></div></div>
+      </section>
+
+      <section id="view-audit" class="view" hidden>
+        <div class="audit-intro"><span class="audit-intro-icon">◷</span><div><strong>知道 AI 做了什么，也知道结果如何</strong><p>按来源、使用者与主机检索操作；点击记录查看命令和输出摘要。</p></div><button id="audit-ai-only" class="button secondary">只看 AI 操作</button></div>
+        <form id="audit-form" class="panel audit-filters"><label>来源<select id="audit-source"><option value="">全部来源</option><option value="mcp">AI / MCP</option><option value="web">网页操作</option><option value="terminal">终端会话</option></select></label><label>主机<select id="audit-host"><option value="">全部主机</option></select></label><label>使用者<input id="audit-actor" placeholder="用户名 / Token 名称"></label><label>开始时间<input id="audit-since" type="datetime-local"></label><label>结束时间<input id="audit-until" type="datetime-local"></label><label class="grow">关键字<input id="audit-keyword" placeholder="命令、操作或输出"></label><button class="button primary" type="submit">筛选</button></form>
+        <div class="panel"><div class="table-scroll"><table class="audit-table"><thead><tr><th>北京时间</th><th>来源 / 使用者</th><th>主机</th><th>操作与命令</th><th>结果</th><th>耗时</th><th></th></tr></thead><tbody id="audit-rows"></tbody></table></div><div id="audit-empty" class="table-empty" hidden>暂无符合筛选条件的操作记录</div><div class="panel-footer"><span id="audit-total">0 条记录</span><div class="toolbar-fields"><button id="audit-prev" class="button compact secondary">← 上一页</button><span id="audit-page">1</span><button id="audit-next" class="button compact secondary">下一页 →</button></div></div></div>
+      </section>
+
+      <section id="view-settings" class="view" hidden>
+        <div class="settings-tabs"><button class="settings-tab active" data-setting="hosts">主机管理</button><button class="settings-tab" data-setting="keys">主机指纹</button><button class="settings-tab" data-setting="tokens">MCP Token</button><button class="settings-tab" data-setting="users">网页用户</button></div>
+        <section id="setting-hosts" class="settings-section"><div class="section-toolbar"><div><h2>主机连接</h2><p class="muted small">修改后自动生效。密码提交后加密保存。</p></div><button id="settings-add-host" class="button primary">＋ 添加主机</button></div><div class="panel table-scroll"><table><thead><tr><th>主机</th><th>连接地址</th><th>SSH 账号</th><th>标签</th><th>操作</th></tr></thead><tbody id="settings-host-rows"></tbody></table><div id="settings-host-empty" class="table-empty" hidden>尚未配置主机</div></div></section>
+        <section id="setting-keys" class="settings-section" hidden><div class="section-toolbar"><div><h2>SSH 主机指纹</h2><p class="muted small">首次连接自动记录。指纹变化时连接会被拒绝，请先核对服务器身份。</p></div></div><div id="settings-key-list" class="key-list"></div></section>
+        <section id="setting-tokens" class="settings-section" hidden><div class="section-toolbar"><div><h2>AI 工具访问凭证</h2><p class="muted small">Token 明文仅创建时显示一次；撤销后立即失效。</p></div><button id="settings-add-token" class="button primary">＋ 创建 Token</button></div><div class="panel table-scroll"><table><thead><tr><th>Token 名称</th><th>使用方式</th><th>操作</th></tr></thead><tbody id="settings-token-rows"></tbody></table><div id="settings-token-empty" class="table-empty" hidden>暂无 MCP Token</div></div></section>
+        <section id="setting-users" class="settings-section" hidden><div class="section-toolbar"><div><h2>网页用户</h2><p class="muted small">修改密码会注销该用户的现有会话。至少保留一位管理员。</p></div><button id="settings-add-user" class="button primary">＋ 添加用户</button></div><div class="panel table-scroll"><table><thead><tr><th>用户名</th><th>权限</th><th>创建时间</th><th>操作</th></tr></thead><tbody id="settings-user-rows"></tbody></table></div></section>
+        <div id="settings-server-note" class="settings-server-note"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="detail-dialog" class="dialog wide-dialog"><div class="dialog-heading"><div><span class="eyebrow">HOST DETAILS</span><h2 id="detail-title"></h2><p id="detail-address" class="muted"></p></div><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><div id="detail-body"></div><div class="dialog-actions"><button id="detail-refresh" class="button secondary">↻ 强制刷新</button><button id="detail-logs" class="button secondary">查看日志</button><button id="detail-terminal" class="button primary">打开终端 ↗</button></div></dialog>
+  <dialog id="host-dialog" class="dialog"><div class="dialog-heading"><h2 id="host-dialog-title">添加主机</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><form id="host-form"><div class="form-grid"><label>名称<input name="name" required maxlength="64" placeholder="web-01"></label><label>SSH 端口<input name="port" type="number" min="1" max="65535" value="22" required></label><label class="full">Tailscale IP / MagicDNS<input name="address" required placeholder="100.101.102.103"></label><label>SSH 用户名<input name="username" required autocomplete="off" placeholder="ubuntu"></label><label><span id="host-password-label">SSH 密码</span><input name="password" type="password" autocomplete="new-password" maxlength="4096"></label><label class="full">标签<input name="tags" placeholder="prod, web（逗号分隔）"></label><label class="full">描述<input name="description" placeholder="这台服务器的用途"></label><label class="inline-check full"><input name="sudo_password_inject" type="checkbox">命令以 sudo 开头时自动注入 SSH 账号密码</label></div><div class="dialog-actions"><button type="button" class="button secondary" data-close-dialog>取消</button><button class="button primary" type="submit">保存主机</button></div></form></dialog>
+  <dialog id="token-dialog" class="dialog"><div class="dialog-heading"><h2>创建 MCP Token</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><form id="token-form"><label>Token 名称<input name="name" required maxlength="128" placeholder="mac-claude-code"></label><p class="muted small">使用能辨认来源的名称，便于在审计中区分不同 AI 工具。</p><div class="dialog-actions"><button type="button" class="button secondary" data-close-dialog>取消</button><button class="button primary" type="submit">创建</button></div></form></dialog>
+  <dialog id="token-result-dialog" class="dialog"><div class="dialog-heading"><h2>保存你的 Token</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><div class="notice warning">此明文只显示一次。关闭窗口后无法再次查看。</div><label id="token-result-label">Token<input id="token-result" readonly autocomplete="off" spellcheck="false"></label><p class="muted small">在 Claude Code 或 Codex 的 MCP 配置中作为 Bearer Token 使用。</p><div class="dialog-actions"><button id="token-copy" class="button secondary">复制 Token</button><button class="button primary" data-close-dialog>已安全保存</button></div></dialog>
+  <dialog id="user-dialog" class="dialog"><div class="dialog-heading"><h2 id="user-dialog-title">添加用户</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><form id="user-form"><label id="user-name-label">用户名<input name="name" required pattern="[A-Za-z0-9_.-]{1,64}" maxlength="64" autocomplete="off"></label><label>密码（8–72 字节）<input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></label><label id="user-admin-label" class="inline-check"><input name="admin" type="checkbox">管理员（可管理主机、凭证与用户）</label><div class="dialog-actions"><button type="button" class="button secondary" data-close-dialog>取消</button><button class="button primary" type="submit">保存用户</button></div></form></dialog>
+  <dialog id="audit-dialog" class="dialog wide-dialog"><div class="dialog-heading"><h2>操作详情</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><div id="audit-detail"></div></dialog>
+  <dialog id="confirm-dialog" class="dialog"><div class="dialog-heading"><h2 id="confirm-title">确认操作</h2><button class="icon-button" data-close-dialog aria-label="关闭">✕</button></div><p id="confirm-message" class="confirm-message"></p><pre id="confirm-detail" class="code-box" hidden></pre><div class="dialog-actions"><button id="confirm-cancel" class="button secondary">取消</button><button id="confirm-ok" class="button danger">确认</button></div></dialog>
+  <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+</body>
+</html>

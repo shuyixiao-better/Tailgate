@@ -1,0 +1,43 @@
+name: tailgate-integration
+
+# Development-only SSH credentials. These containers listen on localhost only.
+# Start with: docker compose up -d --build --wait
+services:
+  ssh-one:
+    build:
+      context: .
+      dockerfile: integration/Dockerfile
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Asia/Shanghai
+      USER_NAME: alice
+      USER_PASSWORD: Tailgate-dev-one-2026!
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "true"
+    ports:
+      - "127.0.0.1:19721:2222"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 2222"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  ssh-two:
+    build:
+      context: .
+      dockerfile: integration/Dockerfile
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Asia/Shanghai
+      USER_NAME: bob
+      USER_PASSWORD: Tailgate-dev-two-2026!
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "true"
+    ports:
+      - "127.0.0.1:19722:2222"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 2222"]
+      interval: 2s
+      timeout: 2s
+      retries: 30

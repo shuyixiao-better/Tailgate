@@ -1,0 +1,87 @@
+__TAILGATE_HOSTNAME__
+8742a5f46300
+__TAILGATE_OS__
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.24.2
+PRETTY_NAME="Alpine Linux v3.24"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://gitlab.alpinelinux.org/alpine/aports/-/issues"
+__TAILGATE_KERNEL__
+6.10.14-linuxkit
+__TAILGATE_UPTIME__
+149600.27 2079743.09
+__TAILGATE_CORES__
+14
+__TAILGATE_LOAD__
+0.93 0.92 0.64 5/518 238
+__TAILGATE_CPU__
+cpu  549579 0 315074 207974311 8631 0 130004 0 0 0
+__TAILGATE_MEMORY__
+MemTotal:        8024876 kB
+MemFree:         1996580 kB
+MemAvailable:    6735904 kB
+Buffers:          484852 kB
+Cached:          3879580 kB
+SwapCached:            0 kB
+Active:          1411200 kB
+Inactive:        3780628 kB
+Active(anon):     833840 kB
+Inactive(anon):    16400 kB
+Active(file):     577360 kB
+Inactive(file):  3764228 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:       1048572 kB
+SwapFree:        1048572 kB
+Zswap:                 0 kB
+Zswapped:              0 kB
+Dirty:                28 kB
+Writeback:             0 kB
+AnonPages:        777264 kB
+Mapped:           282784 kB
+Shmem:             22844 kB
+KReclaimable:     600704 kB
+Slab:             688880 kB
+SReclaimable:     600704 kB
+SUnreclaim:        88176 kB
+KernelStack:        8496 kB
+PageTables:         6896 kB
+SecPageTables:         0 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     5061008 kB
+Committed_AS:    2533144 kB
+VmallocTotal:   135288315904 kB
+VmallocUsed:        5804 kB
+VmallocChunk:          0 kB
+Percpu:             5768 kB
+AnonHugePages:    600064 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+__TAILGATE_DISKS__
+Filesystem     Type 1024-blocks     Used Available Capacity Mounted on
+/dev/vda1      ext4  1055761844 50434364 951624056       6% /config
+__TAILGATE_FAILED__
+__TAILGATE_TOP_CPU__
+    1  0.0  0.0 s6-svscan
+   17  0.0  0.0 s6-supervise
+   20  0.0  0.0 s6-linux-init-s
+   36  0.0  0.0 s6-supervise
+   37  0.0  0.0 s6-supervise
+__TAILGATE_TOP_MEMORY__
+  196  0.0  0.0 sshd.pam
+  245  0.0  0.0 head
+  244  0.0  0.0 ps
+  227  0.0  0.0 sh
+  189  0.0  0.0 busybox
+__TAILGATE_END__
